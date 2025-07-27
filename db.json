@@ -1,0 +1,173 @@
+{
+    "products": [
+      {
+        "id": 1,
+        "name": "Wireless Mouse",
+        "description": "A comfortable and responsive wireless mouse with ergonomic design.",
+        "price": 25.99,
+        "image": "wireless_mouse.jpg",
+        "category": "Electronics",
+        "stock": 100,
+        "rating": 4.5,
+        "reviews": 120
+      },
+      {
+        "id": 2,
+        "name": "Gaming Keyboard",
+        "description": "Mechanical keyboard with customizable RGB lighting and macro keys.",
+        "price": 59.99,
+        "image": "gaming_keyboard.jpg",
+        "category": "Electronics",
+        "stock": 50,
+        "rating": 4.7,
+        "reviews": 85
+      },
+      {
+        "id": 3,
+        "name": "Men's Sneakers",
+        "description": "Stylish and comfortable sneakers for casual and athletic wear.",
+        "price": 40.99,
+        "image": "mens_sneakers.jpg",
+        "category": "Footwear",
+        "stock": 60,
+        "rating": 4.2,
+        "reviews": 200
+      },
+      {
+        "id": 4,
+        "name": "Women's Handbag",
+        "description": "Elegant and spacious handbag perfect for daily use.",
+        "price": 75,
+        "image": "handbag.jpg",
+        "category": "Accessories",
+        "stock": 30,
+        "rating": 4.8,
+        "reviews": 45
+      },
+      {
+        "id": 5,
+        "name": "Smartphone",
+        "description": "Latest smartphone with advanced features and sleek design.",
+        "price": 699.99,
+        "image": "smartphone.jpg",
+        "category": "Electronics",
+        "stock": 25,
+        "rating": 4.9,
+        "reviews": 300
+      },
+      {
+        "id": 6,
+        "name": "Yoga Mat",
+        "description": "Non-slip yoga mat ideal for home and studio workouts.",
+        "price": 19.99,
+        "image": "yoga_mat.jpg",
+        "category": "Sports",
+        "stock": 80,
+        "rating": 4.6,
+        "reviews": 150
+      }
+    ],
+    "categories": [
+      { "id": 1, "name": "Electronics" },
+      { "id": 2, "name": "Clothing" },
+      { "id": 3, "name": "Footwear" },
+      { "id": 4, "name": "Accessories" },
+      { "id": 5, "name": "Sports" },
+      { "id": 6, "name": "Home Appliances" }
+    ],
+    "users": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "password": "password123",
+        "role": "customer",
+        "address": "123 Elm Street, Springfield",
+        "phone": "123-456-7890"
+      },
+      {
+        "id": 2,
+        "name": "Jane Smith",
+        "email": "jane@example.com",
+        "password": "securepass456",
+        "role": "customer",
+        "address": "456 Maple Avenue, Metropolis",
+        "phone": "987-654-3210"
+      },
+      {
+        "id": 3,
+        "name": "Admin User",
+        "email": "admin@example.com",
+        "password": "adminpass789",
+        "role": "admin"
+      }
+    ],
+    "orders": [
+      {
+        "id": 1,
+        "userId": 1,
+        "products": [
+          { "productId": 1, "quantity": 2 },
+          { "productId": 3, "quantity": 1 }
+        ],
+        "total": 92.97,
+        "status": "Processing",
+        "orderDate": "2025-01-01",
+        "shippingAddress": "123 Elm Street, Springfield"
+      },
+      {
+        "id": 2,
+        "userId": 2,
+        "products": [
+          { "productId": 5, "quantity": 1 }
+        ],
+        "total": 699.99,
+        "status": "Shipped",
+        "orderDate": "2025-01-10",
+        "shippingAddress": "456 Maple Avenue, Metropolis"
+      }
+    ],
+    "reviews": [
+      {
+        "id": 1,
+        "productId": 1,
+        "userId": 1,
+        "rating": 5,
+        "comment": "Very comfortable and works perfectly!"
+      },
+      {
+        "id": 2,
+        "productId": 3,
+        "userId": 2,
+        "rating": 4,
+        "comment": "Great quality, but the size runs small."
+      }
+    ],
+    "banners": [
+      {
+        "id": 1,
+        "image": "banner1.jpg",
+        "title": "Winter Sale",
+        "description": "Up to 50% off on selected items."
+      },
+      {
+        "id": 2,
+        "image": "banner2.jpg",
+        "title": "New Arrivals",
+        "description": "Check out the latest additions to our collection."
+      }
+    ],
+    "wishlist": [
+      {
+        "id": 1,
+        "userId": 1,
+        "productIds": [2, 5]
+      },
+      {
+        "id": 2,
+        "userId": 2,
+        "productIds": [4]
+      }
+    ]
+  }
+  
