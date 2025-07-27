@@ -5,17 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>E-Shop - Product Details</title>
   <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
 </head>
 <body>
   <!-- Header -->
   <header>
     <div class="container">
-      <h1>E-Shop</h1>
+      <div class="header-content">
+        <h1><a href="../index.html">E-Shop</a></h1>
+      </div>
       <nav>
         <ul>
           <li><a href="../index.html">Home</a></li>
-          <li><a href="cart.html">Cart</a></li>
-          <li><a href="login.html">Login</a></li>
+          <li><a href="cart.html">🛒 Cart <span class="cart-count"></span></a></li>
+          <li><a href="wishlist.html">❤️ Wishlist <span class="wishlist-count"></span></a></li>
+          <li><a href="orders.html">📦 Orders</a></li>
         </ul>
       </nav>
     </div>
@@ -33,11 +37,15 @@
   <!-- Footer -->
   <footer>
     <div class="container">
-      <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      <div class="footer-bottom">
+        <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
   <!-- Scripts -->
   <script type="module" src="../scripts/product.js"></script>
+  <script type="module" src="../scripts/cart.js"></script>
+  <script type="module" src="../scripts/wishlist.js"></script>
 </body>
 </html>

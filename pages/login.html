@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop - Login</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <h1><a href="../index.html">E-Shop</a></h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="cart.html">🛒 Cart <span class="cart-count"></span></a></li>
+          <li><a href="wishlist.html">❤️ Wishlist <span class="wishlist-count"></span></a></li>
+          <li><a href="orders.html">📦 Orders</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="auth-container">
+      <div class="auth-form">
+        <h2>Login to Your Account</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn">Login</button>
+        </form>
+        <div class="auth-links">
+          <p>Don't have an account? <a href="register.html">Register here</a></p>
+        </div>
+        <div class="demo-credentials">
+          <h4>Demo Credentials:</h4>
+          <p><strong>Customer:</strong> john@example.com / password123</p>
+          <p><strong>Admin:</strong> admin@example.com / adminpass789</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { login } from '../scripts/auth.js';
+    import { updateCartCount } from '../scripts/cart.js';
+    import { updateWishlistCount } from '../scripts/wishlist.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartCount();
+      updateWishlistCount();
+
+      const loginForm = document.getElementById('login-form');
+      
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+          const user = await login(email, password);
+          alert(`Welcome back, ${user.name}!`);
+          
+          // Redirect based on user role
+          if (user.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = '../index.html';
+          }
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

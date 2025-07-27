@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop - Wishlist</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <h1><a href="../index.html">E-Shop</a></h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="cart.html">🛒 Cart <span class="cart-count"></span></a></li>
+          <li><a href="wishlist.html">❤️ Wishlist <span class="wishlist-count"></span></a></li>
+          <li><a href="orders.html">📦 Orders</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="wishlist-page">
+      <h2>My Wishlist</h2>
+      <div id="wishlist-items" class="wishlist-container">
+        <!-- Wishlist items will be dynamically inserted here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { updateNavigation } from '../scripts/auth.js';
+    import { updateCartCount } from '../scripts/cart.js';
+    import { updateWishlistCount, renderWishlist } from '../scripts/wishlist.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateNavigation();
+      updateCartCount();
+      updateWishlistCount();
+      renderWishlist();
+    });
+  </script>
+  <script type="module" src="../scripts/cart.js"></script>
+  <script type="module" src="../scripts/wishlist.js"></script>
+</body>
+</html>

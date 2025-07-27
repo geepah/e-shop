@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop - Admin Dashboard</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <h1><a href="../index.html">E-Shop Admin</a></h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="admin.html">Dashboard</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="admin-dashboard">
+      <h2>Admin Dashboard</h2>
+      
+      <div class="admin-stats">
+        <div class="stat-card">
+          <h3>Total Products</h3>
+          <p id="total-products">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Orders</h3>
+          <p id="total-orders">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Revenue</h3>
+          <p id="total-revenue">$0.00</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Users</h3>
+          <p id="total-users">0</p>
+        </div>
+      </div>
+      
+      <div class="admin-sections">
+        <div class="admin-section">
+          <h3>Recent Orders</h3>
+          <div id="recent-orders" class="admin-table">
+            <!-- Recent orders will be displayed here -->
+          </div>
+        </div>
+        
+        <div class="admin-section">
+          <h3>Order Management</h3>
+          <div id="all-orders" class="admin-table">
+            <!-- All orders will be displayed here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { updateNavigation, getCurrentUser, isAdmin } from '../scripts/auth.js';
+    import { updateCartCount } from '../scripts/cart.js';
+    import { updateWishlistCount } from '../scripts/wishlist.js';
+    import { getOrders, updateOrderStatus } from '../scripts/order.js';
+    import { fetchProducts } from '../scripts/api.js';
+    import { users } from '../scripts/data.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateNavigation();
+      updateCartCount();
+      updateWishlistCount();
+      
+      // Check if user is admin
+      if (!isAdmin()) {
+        alert('Access denied. Admin privileges required.');
+        window.location.href = '../index.html';
+        return;
+      }
+      
+      loadDashboard();
+    });
+
+    async function loadDashboard() {
+      const products = await fetchProducts();
+      const orders = getOrders();
+      
+      // Update stats
+      document.getElementById('total-products').textContent = products.length;
+      document.getElementById('total-orders').textContent = orders.length;
+      document.getElementById('total-users').textContent = users.length;
+      
+      const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+      document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+      
+      // Display recent orders
+      displayRecentOrders(orders.slice(-5).reverse());
+      
+      // Display all orders
+      displayAllOrders(orders.reverse());
+    }
+
+    function displayRecentOrders(orders) {
+      const container = document.getElementById('recent-orders');
+      
+      if (orders.length === 0) {
+        container.innerHTML = '<p>No recent orders</p>';
+        return;
+      }
+      
+      const ordersHtml = orders.map(order => `
+        <div class="order-row">
+          <div class="order-info">
+            <strong>Order #${order.id}</strong>
+            <p>${order.userName} - ${order.userEmail}</p>
+            <p>${order.orderDate}</p>
+          </div>
+          <div class="order-status">
+            <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
+          </div>
+          <div class="order-total">
+            $${order.total.toFixed(2)}
+          </div>
+        </div>
+      `).join('');
+      
+      container.innerHTML = ordersHtml;
+    }
+
+    function displayAllOrders(orders) {
+      const container = document.getElementById('all-orders');
+      
+      if (orders.length === 0) {
+        container.innerHTML = '<p>No orders found</p>';
+        return;
+      }
+      
+      const ordersHtml = orders.map(order => `
+        <div class="order-row admin-order">
+          <div class="order-info">
+            <strong>Order #${order.id}</strong>
+            <p>${order.userName} - ${order.userEmail}</p>
+            <p>${order.orderDate}</p>
+            <p>Tracking: ${order.trackingNumber}</p>
+          </div>
+          <div class="order-products">
+            ${order.products.map(product => `
+              <span class="product-tag">${product.name} (${product.quantity})</span>
+            `).join('')}
+          </div>
+          <div class="order-actions">
+            <select onchange="updateStatus(${order.id}, this.value)" class="status-select">
+              <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+              <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </div>
+          <div class="order-total">
+            $${order.total.toFixed(2)}
+          </div>
+        </div>
+      `).join('');
+      
+      container.innerHTML = ordersHtml;
+    }
+
+    // Make updateStatus globally available
+    window.updateStatus = function(orderId, newStatus) {
+      const updatedOrder = updateOrderStatus(orderId, newStatus);
+      if (updatedOrder) {
+        alert(`Order #${orderId} status updated to ${newStatus}`);
+        loadDashboard(); // Refresh the dashboard
+      } else {
+        alert('Failed to update order status');
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop - Checkout</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <h1><a href="../index.html">E-Shop</a></h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="cart.html">🛒 Cart <span class="cart-count"></span></a></li>
+          <li><a href="wishlist.html">❤️ Wishlist <span class="wishlist-count"></span></a></li>
+          <li><a href="orders.html">📦 Orders</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="checkout-page">
+      <h2>Checkout</h2>
+      
+      <div class="checkout-container">
+        <div class="checkout-form">
+          <h3>Shipping Information</h3>
+          <form id="checkout-form">
+            <div class="form-group">
+              <label for="shipping-name">Full Name:</label>
+              <input type="text" id="shipping-name" name="shipping-name" required>
+            </div>
+            <div class="form-group">
+              <label for="shipping-email">Email:</label>
+              <input type="email" id="shipping-email" name="shipping-email" required>
+            </div>
+            <div class="form-group">
+              <label for="shipping-phone">Phone:</label>
+              <input type="tel" id="shipping-phone" name="shipping-phone" required>
+            </div>
+            <div class="form-group">
+              <label for="shipping-address">Shipping Address:</label>
+              <textarea id="shipping-address" name="shipping-address" required rows="3"></textarea>
+            </div>
+            
+            <h3>Payment Information</h3>
+            <div class="form-group">
+              <label for="payment-method">Payment Method:</label>
+              <select id="payment-method" name="payment-method" required>
+                <option value="">Select Payment Method</option>
+                <option value="credit-card">Credit Card</option>
+                <option value="debit-card">Debit Card</option>
+                <option value="paypal">PayPal</option>
+                <option value="cash-on-delivery">Cash on Delivery</option>
+              </select>
+            </div>
+            
+            <div id="card-details" class="card-details" style="display: none;">
+              <div class="form-group">
+                <label for="card-number">Card Number:</label>
+                <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="expiry-date">Expiry Date:</label>
+                  <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
+                </div>
+                <div class="form-group">
+                  <label for="cvv">CVV:</label>
+                  <input type="text" id="cvv" name="cvv" placeholder="123">
+                </div>
+              </div>
+            </div>
+            
+            <button type="submit" class="btn checkout-btn">Place Order</button>
+          </form>
+        </div>
+        
+        <div class="order-summary">
+          <h3>Order Summary</h3>
+          <div id="checkout-items" class="checkout-items">
+            <!-- Cart items will be displayed here -->
+          </div>
+          <div id="checkout-total" class="checkout-total">
+            <!-- Total will be displayed here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { updateNavigation, getCurrentUser } from '../scripts/auth.js';
+    import { updateCartCount, getCart, getCartTotal } from '../scripts/cart.js';
+    import { updateWishlistCount } from '../scripts/wishlist.js';
+    import { processCheckout } from '../scripts/order.js';
+    import { fetchProductById } from '../scripts/api.js';
+    import { validateEmail, validatePhone } from '../scripts/utils.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      updateNavigation();
+      updateCartCount();
+      updateWishlistCount();
+      
+      // Check if user is logged in
+      const user = getCurrentUser();
+      if (!user) {
+        alert('Please login to proceed with checkout');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Check if cart is empty
+      const cart = getCart();
+      if (cart.length === 0) {
+        alert('Your cart is empty');
+        window.location.href = 'cart.html';
+        return;
+      }
+      
+      // Pre-fill user information
+      document.getElementById('shipping-name').value = user.name;
+      document.getElementById('shipping-email').value = user.email;
+      document.getElementById('shipping-phone').value = user.phone || '';
+      document.getElementById('shipping-address').value = user.address || '';
+      
+      // Display order summary
+      await displayOrderSummary();
+      
+      // Setup payment method change handler
+      const paymentMethod = document.getElementById('payment-method');
+      const cardDetails = document.getElementById('card-details');
+      
+      paymentMethod.addEventListener('change', (e) => {
+        if (e.target.value === 'credit-card' || e.target.value === 'debit-card') {
+          cardDetails.style.display = 'block';
+          cardDetails.querySelectorAll('input').forEach(input => input.required = true);
+        } else {
+          cardDetails.style.display = 'none';
+          cardDetails.querySelectorAll('input').forEach(input => input.required = false);
+        }
+      });
+      
+      // Setup form submission
+      const checkoutForm = document.getElementById('checkout-form');
+      checkoutForm.addEventListener('submit', handleCheckout);
+    });
+
+    async function displayOrderSummary() {
+      const cart = getCart();
+      const checkoutItems = document.getElementById('checkout-items');
+      const checkoutTotal = document.getElementById('checkout-total');
+      
+      let itemsHtml = '';
+      let total = 0;
+      
+      for (const item of cart) {
+        const product = await fetchProductById(item.id);
+        if (product) {
+          const itemTotal = product.price * item.quantity;
+          total += itemTotal;
+          
+          itemsHtml += `
+            <div class="checkout-item">
+              <img src="${product.image}" alt="${product.name}">
+              <div class="item-details">
+                <h4>${product.name}</h4>
+                <p>Quantity: ${item.quantity}</p>
+                <p>Price: $${product.price.toFixed(2)}</p>
+                <p><strong>Subtotal: $${itemTotal.toFixed(2)}</strong></p>
+              </div>
+            </div>
+          `;
+        }
+      }
+      
+      checkoutItems.innerHTML = itemsHtml;
+      
+      const shipping = 0; // Free shipping
+      const tax = total * 0.08; // 8% tax
+      const finalTotal = total + shipping + tax;
+      
+      checkoutTotal.innerHTML = `
+        <div class="total-breakdown">
+          <p>Subtotal: $${total.toFixed(2)}</p>
+          <p>Shipping: $${shipping.toFixed(2)}</p>
+          <p>Tax: $${tax.toFixed(2)}</p>
+          <hr>
+          <p class="final-total"><strong>Total: $${finalTotal.toFixed(2)}</strong></p>
+        </div>
+      `;
+    }
+
+    async function handleCheckout(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const checkoutData = {
+        shippingAddress: formData.get('shipping-address'),
+        paymentMethod: formData.get('payment-method'),
+        customerName: formData.get('shipping-name'),
+        customerEmail: formData.get('shipping-email'),
+        customerPhone: formData.get('shipping-phone')
+      };
+      
+      // Validation
+      if (!validateEmail(checkoutData.customerEmail)) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      if (!validatePhone(checkoutData.customerPhone)) {
+        alert('Please enter a valid phone number');
+        return;
+      }
+      
+      // Process checkout
+      const result = processCheckout(checkoutData);
+      
+      if (result.success) {
+        alert(`${result.message}\nOrder ID: ${result.order.id}\nTracking Number: ${result.order.trackingNumber}`);
+        window.location.href = 'orders.html';
+      } else {
+        alert(result.message);
+      }
+    }
+  </script>
+</body>
+</html>

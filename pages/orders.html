@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shop - My Orders</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/responsive.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <h1><a href="../index.html">E-Shop</a></h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="cart.html">🛒 Cart <span class="cart-count"></span></a></li>
+          <li><a href="wishlist.html">❤️ Wishlist <span class="wishlist-count"></span></a></li>
+          <li><a href="orders.html">📦 Orders</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container">
+    <div class="orders-page">
+      <h2>My Orders</h2>
+      <div id="orders-container" class="orders-container">
+        <!-- Orders will be dynamically inserted here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2025 E-Shop. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { updateNavigation, getCurrentUser } from '../scripts/auth.js';
+    import { updateCartCount } from '../scripts/cart.js';
+    import { updateWishlistCount } from '../scripts/wishlist.js';
+    import { renderOrders } from '../scripts/order.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateNavigation();
+      updateCartCount();
+      updateWishlistCount();
+      
+      // Check if user is logged in
+      const user = getCurrentUser();
+      if (!user) {
+        alert('Please login to view your orders');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      renderOrders();
+    });
+  </script>
+</body>
+</html>
